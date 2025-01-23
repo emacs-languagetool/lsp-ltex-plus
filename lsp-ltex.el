@@ -32,6 +32,7 @@
 ;;; Code:
 
 (require 'custom)
+(require 'pcase)
 (require 'subr-x)
 
 (require 'lsp-mode)
@@ -45,13 +46,26 @@ https://github.com/valentjn/ltex-ls"
   :group 'lsp-mode
   :link '(url-link :tag "Github" "https://github.com/emacs-languagetool/lsp-ltex"))
 
-(defconst lsp-ltex-repo-path "valentjn/ltex-ls"
-  "Path points to the repository url.")
+(defcustom lsp-ltex-backend 'ltex-ls
+  "The backend language server to use."
+  :type '(choice (const :tag "ltex-ls" ltex-ls)
+                 (const :tag "ltex-ls-plus" ltex-ls-plus)))
+
+(defun lsp-ltex-name ()
+  "The backend server name."
+  (format "%s" lsp-ltex-backend))
+
+(defun lsp-ltex-repo-path ()
+  "Path points to the repository url."
+  (pcase lsp-ltex-backend
+    (`ltex-ls      "valentjn/ltex-ls")
+    (`ltex-ls-plus "ltex-plus/ltex-ls-plus")
+    (_ (user-error "Unsupported backend for LTEX language server: %s" lsp-ltex-backend))))
 
 (defcustom lsp-ltex-active-modes
   '( text-mode
      bibtex-mode context-mode
-     latex-mode LaTeX-mode ;; AUCTeX 14+ has renamed latex-mode to LaTeX-mode
+     latex-mode LaTeX-mode  ; AUCTeX 14+ has renamed latex-mode to LaTeX-mode
      markdown-mode gfm-mode
      org-mode
      rst-mode)
@@ -63,11 +77,15 @@ https://github.com/valentjn/ltex-ls"
 (defvar lsp-ltex--extension-name nil "File name of the extension file from language server.")
 (defvar lsp-ltex--server-download-url nil "Automatic download url for lsp-ltex.")
 
-(defcustom lsp-ltex-server-store-path
-  (expand-file-name "ltex-ls" lsp-server-install-dir)
+(defcustom lsp-ltex-server-store-path nil
   "The path to the file in which LTEX Language Server will be stored."
   :type 'file
   :group 'lsp-ltex)
+
+(defun lsp-ltex-server-store-path ()
+  "The actual language server path."
+  (or lsp-ltex-server-store-path
+      (expand-file-name (lsp-ltex-name) lsp-server-install-dir)))
 
 (defcustom lsp-ltex-user-rules-path
   (let ((path (expand-file-name "lsp-ltex" user-emacs-directory)))
@@ -367,32 +385,35 @@ and concatenate them."
   "Return full path of the downloaded extension (compressed file).
 
 This is use to unzip the language server files."
-  (expand-file-name lsp-ltex--extension-name lsp-ltex-server-store-path))
+  (expand-file-name lsp-ltex--extension-name (lsp-ltex-server-store-path)))
 
 (defun lsp-ltex--extension-root ()
   "Return the root of the extension path.
 
 This is use to active language server and check if language server's existence."
-  (expand-file-name "latest" lsp-ltex-server-store-path))
+  (expand-file-name "latest" (lsp-ltex-server-store-path)))
 
 (defun lsp-ltex--store-locally-p ()
   "Return non-nil if language server is installed locally."
-  (and (string-prefix-p lsp-server-install-dir lsp-ltex-server-store-path)
-       (file-directory-p lsp-ltex-server-store-path)))
+  (and (string-prefix-p lsp-server-install-dir (lsp-ltex-server-store-path))
+       (file-directory-p (lsp-ltex-server-store-path))))
 
 (defun lsp-ltex--current-version ()
   "Return the current version of LTEX."
   (if (lsp-ltex--store-locally-p)
-      (when-let* ((gz-files (directory-files-recursively lsp-ltex-server-store-path "\\.gz"))
+      (when-let* ((gz-files (directory-files-recursively (lsp-ltex-server-store-path) "\\.gz"))
                   (tar (car gz-files))
                   (fn (file-name-nondirectory (lsp-ltex--s-replace ".tar.gz" "" tar))))
-        (lsp-ltex--s-replace "ltex-ls-" "" fn))
-    (ignore-errors (gethash "ltex-ls" (json-parse-string (shell-command-to-string "ltex-ls -V"))))))
+        (lsp-ltex--s-replace (format "%s-" (lsp-ltex-name)) "" fn))
+    (ignore-errors
+      (gethash (lsp-ltex-name)
+               (json-parse-string
+                (shell-command-to-string (format "%s -V" (lsp-ltex-name))))))))
 
 (defun lsp-ltex--latest-version ()
   "Return the latest version from remote repository."
   (when (featurep 'github-tags)
-    (when-let ((response (ignore-errors (github-tags lsp-ltex-repo-path))))
+    (when-let ((response (ignore-errors (github-tags (lsp-ltex-repo-path)))))
       (let ((names (plist-get (cdr response) :names))
             (index 0) version ver)
         ;; Loop through tag name and fine the stable version
@@ -411,18 +432,26 @@ This is use to active language server and check if language server's existence."
    `(:download :url ,lsp-ltex--server-download-url
                :store-path ,(lsp-ltex--downloaded-extension-path))))
 
+(defun lsp-ltex--fallback-version ()
+  "Fallback to this version by default."
+  (pcase lsp-ltex-backend
+    (`ltex-ls      "16.0.0")
+    (`ltex-ls-plus "18.4.0")
+    (_ (user-error "Unsupported backend for LTEX language server: %s" lsp-ltex-backend))))
+
 (defcustom lsp-ltex-version (or (lsp-ltex--current-version)
                                 (lsp-ltex--latest-version)
-                                "14.0.0")  ; fall back to preset version
+                                (lsp-ltex--fallback-version))  ; fall back to preset version
   "Version of LTEX language server."
   :type 'string
   :set (lambda (symbol value)
          (set-default symbol value)
-         (setq lsp-ltex--filename (format "ltex-ls-%s" value)
-               lsp-ltex--extension-name (format "%s.tar.gz" lsp-ltex--filename)
-               lsp-ltex--server-download-url
-               (format "https://github.com/%s/releases/download/%s/%s"
-                       lsp-ltex-repo-path value lsp-ltex--extension-name))
+         (let ((is-windows (eq system-type 'windows-nt)))
+           (setq lsp-ltex--filename (format "%s-%s" (lsp-ltex-name) value)
+                 lsp-ltex--extension-name (format "%s.tar.gz" lsp-ltex--filename)
+                 lsp-ltex--server-download-url
+                 (format "https://github.com/%s/releases/download/%s/%s"
+                         (lsp-ltex-repo-path) value lsp-ltex--extension-name)))
          (lsp-ltex--lsp-dependency))
   :group 'lsp-ltex)
 
@@ -437,7 +466,7 @@ If current server not found, install it then."
         (message "[INFO] Current LTEX server is up to date: %s" current)
       (when current
         ;; First delete all binary files
-        (delete-directory lsp-ltex-server-store-path t))
+        (delete-directory (lsp-ltex-server-store-path) t))
       (custom-set-variables `(lsp-ltex-version ,latest))
       (lsp-install-server t 'ltex-ls)  ; this is async
       (message "[INFO] %s LTEX server version: %s"
