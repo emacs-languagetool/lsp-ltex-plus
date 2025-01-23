@@ -9,7 +9,7 @@
 [![CI](https://github.com/emacs-languagetool/lsp-ltex-plus/actions/workflows/test.yml/badge.svg)](https://github.com/emacs-languagetool/lsp-ltex-plus/actions/workflows/test.yml)
 [![Activate](https://github.com/emacs-languagetool/lsp-ltex-plus/actions/workflows/activate.yml/badge.svg)](https://github.com/emacs-languagetool/lsp-ltex-plus/actions/workflows/activate.yml)
 
-`lsp-mode` client leveraging [LTEX Language Server](https://github.com/ltex-plus/ltex-ls-plus).
+`lsp-mode` client leveraging [LTEX+ Language Server](https://github.com/ltex-plus/ltex-ls-plus).
 
 <p align="center"><img src="./etc/screenshot.png"/></p>
 
