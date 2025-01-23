@@ -1,5 +1,5 @@
 (package "lsp-ltex-plus"
-         "0.2.1"
+         "0.3.0"
          "LSP Clients for LTEX+")
 
 (website-url "https://github.com/emacs-languagetool/lsp-ltex-plus")

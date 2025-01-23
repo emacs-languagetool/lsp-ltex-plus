@@ -5,7 +5,7 @@
 
 ;; Author: Shen, Jen-Chieh <jcs090218@gmail.com>
 ;; URL: https://github.com/emacs-languagetool/lsp-ltex-plus
-;; Version: 0.2.1
+;; Version: 0.3.0
 ;; Package-Requires: ((emacs "27.1") (lsp-mode "6.1"))
 ;; Keywords: convenience lsp languagetool checker
 
