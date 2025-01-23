@@ -1,19 +1,19 @@
-(package "lsp-ltex"
+(package "lsp-ltex-plus"
          "0.2.1"
-         "LSP Clients for LTEX")
+         "LSP Clients for LTEX+")
 
-(website-url "https://github.com/emacs-languagetool/lsp-ltex")
+(website-url "https://github.com/emacs-languagetool/lsp-ltex-plus")
 (keywords "convenience" "lsp" "languagetool" "checker")
 
-(package-file "lsp-ltex.el")
+(package-file "lsp-ltex-plus.el")
 
 (script "test" "echo \"Error: no test specified\" && exit 1")
 
-(source "gnu")
-(source "melpa")
-(source "jcs-elpa")
+(source 'gnu)
+(source 'melpa)
+(source 'jcs-elpa)
 
-(depends-on "emacs" "26.1")
+(depends-on "emacs" "27.1")
 (depends-on "lsp-mode")
 (depends-on "github-tags")
 
