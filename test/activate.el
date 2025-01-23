@@ -29,14 +29,14 @@
 
 (require 'lsp-mode)
 
-(lsp-install-server t 'ltex-ls)  ; Start installation
+(lsp-install-server t 'ltex-ls-plus)  ; Start installation
 
 (defconst timeout 180
   "Timeout in seconds.")
 
 (defvar timer 0)
 
-(defconst server-install-path (lsp-ltex--extension-root)
+(defconst server-install-path (lsp-ltex-plus--extension-root)
   "The server install location.")
 
 (while (not (file-exists-p server-install-path))
