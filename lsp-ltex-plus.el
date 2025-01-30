@@ -84,7 +84,7 @@ https://github.com/ltex-plus/ltex-ls-plus"
                  list)
   :group 'lsp-ltex-plus)
 
-(defcustom lsp-ltex-plus-plus-language "en-US"
+(defcustom lsp-ltex-plus-language "en-US"
   "The language LanguageTool should check against."
   :type 'string
   :group 'lsp-ltex-plus)
@@ -348,7 +348,7 @@ Return the deserialized object, or nil if the SYM.el file dont exist."
 
 (defun lsp-ltex-plus-combine-plists (&rest plists)
   "Create a single property list from all plists in PLISTS.
-Modified from `org-combine-plists'. This supposes the values to be vectors,
+Modified from `org-combine-plists'.  This supposes the values to be vectors,
 and concatenate them."
   (let ((res (copy-sequence (pop plists)))
         prop val plist)
@@ -507,7 +507,7 @@ This file is use to activate the language server."
 
 (lsp-register-custom-settings
  '(("ltex.enabled" lsp-ltex-plus-enabled)
-   ("ltex.language" lsp-ltex-plus-plus-language)
+   ("ltex.language" lsp-ltex-plus-language)
    ("ltex.dictionary" lsp-ltex-plus--combined-dictionary)
    ("ltex.disabledRules" lsp-ltex-plus--combined-disabled-rules)
    ("ltex.enabledRules" lsp-ltex-plus-enabled-rules)
