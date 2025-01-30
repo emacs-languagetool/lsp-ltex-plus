@@ -26,11 +26,12 @@
 ```
 
 For `lsp-ltex-plus` to run you need to have `ltex-ls-plus` installed and available.
-Go to https://valentjn.github.io/ltex/ltex-ls/installation.html, download
-the appropriate version, uncompress, and place it under `~/.emacs.d/.cache/lsp/ltex-ls`
-. As explained there, if you download the archive that corresponds to
+Go to [`ltex-ls-plus` installation page](https://ltex-plus.github.io/ltex-plus/installation-usage.html),
+download the appropriate version, uncompress, and place it under
+`~/.emacs.d/.cache/lsp/ltex-ls` or `~/.config/emacs/.cache/lsp/ltex-ls`.
+As explained there, if you download the archive that corresponds to
 your platform, no Java installation is needed. If you use the platform-independent
-file, you will need Java in your computer and you will need to set the JAVA_HOME
+file, you will need Java in your computer, and you will need to set the JAVA_HOME
 environment variable.
 
 In the configuration for `lsp-ltex-plus` you will probably want to set the version
@@ -146,6 +147,6 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <https://www.gnu.org/licenses/>.
+along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 See [`LICENSE`](./LICENSE.txt) for details.
