@@ -80,7 +80,8 @@ https://github.com/ltex-plus/ltex-ls-plus"
 
 (defcustom lsp-ltex-plus-enabled nil
   "Controls whether the extension is enabled."
-  :type '(choice (const :tag "None" nil)
+  :type '(choice (const :tag "false" nil)
+                 (const :tag "true" t)
                  (vector string))
   :group 'lsp-ltex-plus)
 
@@ -91,45 +92,45 @@ https://github.com/ltex-plus/ltex-ls-plus"
 
 (defcustom lsp-ltex-plus-dictionary nil
   "Lists of additional words that should not be counted as spelling errors."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-disabled-rules nil
   "Lists of rules that should be disabled (if enabled by default by
 LanguageTool)."
-  :type '(vector string)
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-enabled-rules nil
   "Lists of rules that should be enabled (if disabled by default by
 LanguageTool)."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-hidden-false-positives nil
   "Lists of false-positive diagnostics to hide."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-bibtex-fields nil
   "List of BibTEX fields whose values are to be checked in BibTEX files."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-latex-commands nil
   "List of LATEX commands to be handled by the LATEX parser, listed together
 with empty arguments."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-latex-environments nil
   "List of names of LATEX environments to be handled by the LATEX parser."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-markdown-nodes nil
   "List of Markdown node types to be handled by the Markdown parser."
-  :type 'list
+  :type 'string
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-additional-rules-enable-picky-rules nil
@@ -343,7 +344,7 @@ Return the deserialized object, or nil if the SYM.el file dont exist."
     (set rules-plist (list lang [])))
   (plist-put (eval rules-plist) lang
              (vconcat (list rule) (plist-get (eval rules-plist) lang)))
-  (when-let (out-file (lsp-ltex-plus--serialize-symbol rules-plist lsp-ltex-plus-user-rules-path))
+  (when-let* ((out-file (lsp-ltex-plus--serialize-symbol rules-plist lsp-ltex-plus-user-rules-path)))
     (lsp-message "[INFO] Rule for language %s saved to file \"%s\"" (symbol-name lang) out-file)))
 
 (defun lsp-ltex-plus-combine-plists (&rest plists)
@@ -392,7 +393,7 @@ This is use to active language server and check if language server's existence."
 (defun lsp-ltex-plus--latest-version ()
   "Return the latest version from remote repository."
   (when (featurep 'github-tags)
-    (when-let ((response (ignore-errors (github-tags lsp-ltex-plus-repo-path))))
+    (when-let* ((response (ignore-errors (github-tags lsp-ltex-plus-repo-path))))
       (let ((names (plist-get (cdr response) :names))
             (index 0) version ver)
         ;; Loop through tag name and fine the stable version
