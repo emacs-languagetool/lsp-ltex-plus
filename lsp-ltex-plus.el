@@ -51,12 +51,12 @@ https://github.com/ltex-plus/ltex-ls-plus"
 (defcustom lsp-ltex-plus-active-modes
   '( text-mode
      bibtex-mode context-mode
-     latex-mode LaTeX-mode ;; AUCTeX 14+ has renamed latex-mode to LaTeX-mode
+     latex-mode LaTeX-mode  ; AUCTeX 14+ has renamed latex-mode to LaTeX-mode
      markdown-mode gfm-mode
      org-mode
      rst-mode)
   "List of major mode that work with LTEX+ Language Server."
-  :type 'list
+  :type '(list symbol)
   :group 'lsp-ltex-plus)
 
 (defvar lsp-ltex-plus--filename nil "File base name.")
@@ -81,7 +81,7 @@ https://github.com/ltex-plus/ltex-ls-plus"
 (defcustom lsp-ltex-plus-enabled nil
   "Controls whether the extension is enabled."
   :type '(choice (const :tag "None" nil)
-                 list)
+                 (vector string))
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-language "en-US"
@@ -97,7 +97,7 @@ https://github.com/ltex-plus/ltex-ls-plus"
 (defcustom lsp-ltex-plus-disabled-rules nil
   "Lists of rules that should be disabled (if enabled by default by
 LanguageTool)."
-  :type 'list
+  :type '(vector string)
   :group 'lsp-ltex-plus)
 
 (defcustom lsp-ltex-plus-enabled-rules nil
