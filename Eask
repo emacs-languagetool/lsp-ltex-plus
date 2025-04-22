@@ -1,3 +1,5 @@
+;; -*- mode: eask; lexical-binding: t -*-
+
 (package "lsp-ltex-plus"
          "0.3.0"
          "LSP Clients for LTEX+")
