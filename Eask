@@ -15,7 +15,7 @@
 (source 'melpa)
 (source 'jcs-elpa)
 
-(depends-on "emacs" "28.1")
+(depends-on "emacs" "29.1")
 (depends-on "lsp-mode")
 (depends-on "github-tags")  ; TODO: Move to `development' scope?
 
